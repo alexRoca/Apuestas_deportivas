@@ -41,7 +41,8 @@ class controlador001 {
             $_SESSION['last_name'] = $data_user[0]['last_name'];
         }
 
-        $this->index();
+        header('Location: Principal');
+        exit;
 
     }
 
@@ -53,6 +54,11 @@ class controlador001 {
             unset($_SESSION['last_name']);
         }
 
+        header('Location: Principal');
+        exit;
+    }
+
+    public function Principal(){
         $this->index();
     }
 }
