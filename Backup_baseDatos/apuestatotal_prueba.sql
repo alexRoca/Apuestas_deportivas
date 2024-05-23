@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1:3306
--- Tiempo de generación: 23-05-2024 a las 12:26:25
+-- Tiempo de generación: 23-05-2024 a las 15:39:49
 -- Versión del servidor: 8.0.21
 -- Versión de PHP: 7.3.21
 
@@ -89,6 +89,23 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_get_customer_wallets_v1` (`p_Pla
 	t1.amount 
 	FROM t_customer_wallets t1
 	WHERE t1.id_customer = p_PlayerID;
+
+END$$
+
+DROP PROCEDURE IF EXISTS `sp_get_recharge_cancel_v1`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_get_recharge_cancel_v1` (`p_PlayerID` BIGINT UNSIGNED)  BEGIN		
+	
+	SELECT 
+	t1.id_recharge,
+	t2.amount,
+	t1.motive,
+	CONCAT(t3.first_name, ' ', t3.last_name) name_user,
+	t1.timestamp_created
+	FROM t_recharge_cancel t1
+	INNER JOIN t_recharge t2 ON t2.id_recharge = t1.id_recharge 
+	INNER JOIN t_users t3 ON t3.id_users = t1.id_users_created 
+	WHERE t2.id_customer = p_PlayerID
+	ORDER BY t1.timestamp_created DESC;
 
 END$$
 
@@ -218,7 +235,7 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_set_anular_recharge_v1` (`p_id_r
 		id_users_created 
 		)VALUES(
 			genera_id(),
-			1,
+			-2,
 			v_id_customer,
 			p_id_recharge,
 			- v_amount,
@@ -236,6 +253,16 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_set_anular_recharge_v1` (`p_id_r
 	SET
 	t1.id_status = -1
 	WHERE t1.id_recharge = p_id_recharge;
+
+	INSERT INTO t_recharge_cancel (
+	id_recharge,
+	id_users_created, 
+	motive
+	)VALUES(
+		p_id_recharge,
+		p_id_users,
+		p_motive
+	);
 
 END$$
 
@@ -470,8 +497,8 @@ CREATE TABLE IF NOT EXISTS `t_customer_wallets` (
 --
 
 INSERT INTO `t_customer_wallets` (`id_customer`, `amount`, `timestamp_created`) VALUES
-(2024052202115998372, '1200.00', '2024-05-23 02:27:11.167023'),
-(2024052202145598375, '0.00', '2024-05-23 02:27:24.687522'),
+(2024052202115998372, '12.00', '2024-05-23 02:27:11.167023'),
+(2024052202145598375, '50.00', '2024-05-23 02:27:24.687522'),
 (2024052202201698377, '0.00', '2024-05-23 02:27:49.354555');
 
 -- --------------------------------------------------------
@@ -503,13 +530,12 @@ CREATE TABLE IF NOT EXISTS `t_customer_wallets_movements` (
 --
 
 INSERT INTO `t_customer_wallets_movements` (`id_customer_wallets_movements`, `id_customer_wallets_movements_types`, `id_customer`, `id_recharge`, `amount`, `id_users_created`, `timestamp_created`) VALUES
-(2024052304235898379, 1, 2024052202115998372, 2024052303500998378, '10.00', 2024052201133098371, '2024-05-23 09:23:58.055322'),
-(2024052305022998383, -2, 2024052202115998372, 2024052303500998378, '-10.00', 2024052201133098371, '2024-05-23 10:02:29.114468'),
-(2024052305052598385, 1, 2024052202115998372, 2024052304451498382, '13.40', 2024052201133098371, '2024-05-23 10:05:25.055474'),
-(2024052306122498388, -1, 2024052202115998372, 2024052304451498382, '-13.00', 2024052201133098371, '2024-05-23 11:12:24.322624'),
-(2024052306122498389, 2, 2024052202115998372, 2024052304451498382, '412.40', 2024052201133098371, '2024-05-23 11:12:24.342107'),
-(2024052306164698390, -1, 2024052202115998372, 2024052304451498382, '-412.40', 2024052201133098371, '2024-05-23 11:16:46.809185'),
-(2024052306164698391, 2, 2024052202115998372, 2024052304451498382, '1200.00', 2024052201133098371, '2024-05-23 11:16:46.811693');
+(2024052310343239675, 1, 2024052202145598375, 2024052310342639673, '20.00', 2024052201133098371, '2024-05-23 15:34:32.897537'),
+(2024052310353039676, -1, 2024052202145598375, 2024052310342639673, '-20.00', 2024052201133098371, '2024-05-23 15:35:30.277806'),
+(2024052310353039677, 2, 2024052202145598375, 2024052310342639673, '25.00', 2024052201133098371, '2024-05-23 15:35:30.280856'),
+(2024052310363639679, -2, 2024052202145598375, 2024052310342639673, '-25.00', 2024052201133098371, '2024-05-23 15:36:36.813952'),
+(2024052310364539680, 1, 2024052202145598375, 2024052310354139678, '50.00', 2024052201133098371, '2024-05-23 15:36:45.880156'),
+(2024052310372939683, 1, 2024052202115998372, 2024052310371739681, '12.00', 2024052201133098371, '2024-05-23 15:37:29.112490');
 
 -- --------------------------------------------------------
 
@@ -576,10 +602,38 @@ CREATE TABLE IF NOT EXISTS `t_recharge` (
 --
 
 INSERT INTO `t_recharge` (`id_recharge`, `id_customer`, `id_status`, `id_bank`, `id_channel`, `id_users_created`, `id_users_modified`, `amount`, `image`, `timestamp_created`) VALUES
-(2024052303500998378, 2024052202115998372, -1, 1, 1, 2024052201133098371, 2024052201133098371, '10.00', '', '2024-05-23 08:50:09.846573'),
-(2024052304451498382, 2024052202115998372, 2, 2, 3, 2024052201133098371, 2024052201133098371, '1200.00', '', '2024-05-23 09:45:14.574174'),
-(2024052305060998386, 2024052202115998372, -1, 3, 2, 2024052201133098371, 2024052201133098371, '25.10', '', '2024-05-23 10:06:09.942326'),
-(2024052305541998387, 2024052202115998372, 1, 1, 2, 2024052201133098371, 2024052201133098371, '1.00', '', '2024-05-23 10:54:19.252881');
+(2024052310342639673, 2024052202145598375, -1, 2, 3, 2024052201133098371, 2024052201133098371, '25.00', '', '2024-05-23 15:34:26.011328'),
+(2024052310343139674, 2024052202145598375, -1, 2, 3, 2024052201133098371, 2024052201133098371, '4.00', '', '2024-05-23 15:34:31.320968'),
+(2024052310354139678, 2024052202145598375, 2, 2, 3, 2024052201133098371, 2024052201133098371, '50.00', '', '2024-05-23 15:35:41.660734'),
+(2024052310371739681, 2024052202115998372, 2, 2, 3, 2024052201133098371, 2024052201133098371, '12.00', '', '2024-05-23 15:37:17.273032'),
+(2024052310372439682, 2024052202115998372, -1, 2, 3, 2024052201133098371, 2024052201133098371, '30.80', '', '2024-05-23 15:37:24.612235');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `t_recharge_cancel`
+--
+
+DROP TABLE IF EXISTS `t_recharge_cancel`;
+CREATE TABLE IF NOT EXISTS `t_recharge_cancel` (
+  `id_recharge` bigint UNSIGNED NOT NULL,
+  `motive` varchar(255) NOT NULL,
+  `id_users_created` bigint UNSIGNED NOT NULL,
+  `timestamp_created` timestamp(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  PRIMARY KEY (`id_recharge`),
+  KEY `t_recharge_cancel_motive_IDX` (`motive`) USING BTREE,
+  KEY `t_recharge_cancel_timestamp_created_IDX` (`timestamp_created`) USING BTREE,
+  KEY `t_recharge_cancel_id_users_created_IDX` (`id_users_created`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Volcado de datos para la tabla `t_recharge_cancel`
+--
+
+INSERT INTO `t_recharge_cancel` (`id_recharge`, `motive`, `id_users_created`, `timestamp_created`) VALUES
+(2024052310342639673, 'cliente ya no desea el saldo de esta recarga', 2024052201133098371, '2024-05-23 15:36:36.832519'),
+(2024052310343139674, 'recarga con error', 2024052201133098371, '2024-05-23 15:35:59.239932'),
+(2024052310372439682, 'error con el vaucher', 2024052201133098371, '2024-05-23 15:38:06.106122');
 
 -- --------------------------------------------------------
 
@@ -676,6 +730,13 @@ ALTER TABLE `t_recharge`
   ADD CONSTRAINT `t_recharge_FK_3` FOREIGN KEY (`id_status`) REFERENCES `t_status` (`id_status`),
   ADD CONSTRAINT `t_recharge_FK_4` FOREIGN KEY (`id_channel`) REFERENCES `t_channel` (`id_channel`),
   ADD CONSTRAINT `t_recharge_FK_5` FOREIGN KEY (`id_bank`) REFERENCES `t_bank` (`id_bank`);
+
+--
+-- Filtros para la tabla `t_recharge_cancel`
+--
+ALTER TABLE `t_recharge_cancel`
+  ADD CONSTRAINT `t_recharge_cancel_FK` FOREIGN KEY (`id_recharge`) REFERENCES `t_recharge` (`id_recharge`),
+  ADD CONSTRAINT `t_recharge_cancel_FK_1` FOREIGN KEY (`id_users_created`) REFERENCES `t_users` (`id_users`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

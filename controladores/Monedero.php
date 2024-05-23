@@ -22,6 +22,9 @@ class Monedero {
                 }
             }elseif($_GET){
                 $this->index($_GET);
+            }else{
+                header('Location: Principal');
+                exit;
             }
         }else{
             header('Location: Principal');
