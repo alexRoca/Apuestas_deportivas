@@ -46,4 +46,153 @@ class consultasYregistros extends conexion{
         }
     }
 
+    public function get_customer_wallets($parameter){
+        $PlayerID = !empty($parameter['PlayerID']) ? $parameter['PlayerID'] : 0;
+
+        try {
+            $stmt = $this->conec->prepare("CALL sp_get_customer_wallets_v1(:PlayerID)");
+            $stmt->bindParam(':PlayerID', $PlayerID, PDO::PARAM_INT);
+            $stmt->execute();
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $stmt->closeCursor();
+            return $result;
+        } catch (PDOException $e) {
+            return "Error al ejecutar el procedimiento almacenado: " . $e->getMessage();
+        }
+    }
+
+    public function get_recharge($parameter){
+        $PlayerID = !empty($parameter['PlayerID']) ? $parameter['PlayerID'] : 0;
+
+        try {
+            $stmt = $this->conec->prepare("CALL sp_get_recharge_v1(:PlayerID)");
+            $stmt->bindParam(':PlayerID', $PlayerID, PDO::PARAM_INT);
+            $stmt->execute();
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $stmt->closeCursor();
+            return $result;
+        } catch (PDOException $e) {
+            return "Error al ejecutar el procedimiento almacenado: " . $e->getMessage();
+        }
+    }
+
+    public function get_customer_wallets_movements($parameter){
+        $PlayerID = !empty($parameter['PlayerID']) ? $parameter['PlayerID'] : 0;
+
+        try {
+            $stmt = $this->conec->prepare("CALL sp_get_customer_wallets_movements_v1(:PlayerID)");
+            $stmt->bindParam(':PlayerID', $PlayerID, PDO::PARAM_INT);
+            $stmt->execute();
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $stmt->closeCursor();
+            return $result;
+        } catch (PDOException $e) {
+            return "Error al ejecutar el procedimiento almacenado: " . $e->getMessage();
+        }
+    }
+
+    public function get_bank(){
+        try {
+            $stmt = $this->conec->prepare("CALL sp_get_bank_v1()");
+            $stmt->execute();
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $stmt->closeCursor();
+            return $result;
+        } catch (PDOException $e) {
+            return "Error al ejecutar el procedimiento almacenado: " . $e->getMessage();
+        }
+    }
+
+    public function get_channel(){
+        try {
+            $stmt = $this->conec->prepare("CALL sp_get_channel_v1()");
+            $stmt->execute();
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $stmt->closeCursor();
+            return $result;
+        } catch (PDOException $e) {
+            return "Error al ejecutar el procedimiento almacenado: " . $e->getMessage();
+        }
+    }
+
+    public function post_recharge($parameter){
+        $id_users = !empty($parameter['id_users']) ? $parameter['id_users'] : 0;
+        $id_customer = !empty($parameter['id_customer']) ? $parameter['id_customer'] : 0;
+        $id_bank = !empty($parameter['id_bank']) ? $parameter['id_bank'] : 0;
+        $id_channel = !empty($parameter['id_channel']) ? $parameter['id_channel'] : 0;
+        $amount = !empty($parameter['amount']) ? $parameter['amount'] : 0;
+
+        try {
+            $stmt = $this->conec->prepare("CALL sp_post_recharge_v1(:id_customer, :id_bank, :id_channel, :amount, :id_users)");
+            $stmt->bindParam(':id_customer', $id_customer, PDO::PARAM_INT);
+            $stmt->bindParam(':id_bank', $id_bank, PDO::PARAM_INT);
+            $stmt->bindParam(':id_channel', $id_channel, PDO::PARAM_INT);
+            $stmt->bindParam(':amount', $amount, PDO::PARAM_STR);
+            $stmt->bindParam(':id_users', $id_users, PDO::PARAM_INT);
+            $stmt->execute();
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $stmt->closeCursor();
+            return $result;
+        } catch (PDOException $e) {
+            return "Error al ejecutar el procedimiento almacenado: " . $e->getMessage();
+        }
+    }
+
+    public function set_asignar($parameter){
+        $id_users = !empty($parameter['id_users']) ? $parameter['id_users'] : 0;
+        $id_recharge = !empty($parameter['id_recharge']) ? $parameter['id_recharge'] : 0;
+
+        try {
+            $stmt = $this->conec->prepare("CALL sp_set_asignar_recharge_v1(:id_recharge, :id_users)");
+            $stmt->bindParam(':id_recharge', $id_recharge, PDO::PARAM_INT);
+            $stmt->bindParam(':id_users', $id_users, PDO::PARAM_INT);
+            $stmt->execute();
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $stmt->closeCursor();
+            return $result;
+        } catch (PDOException $e) {
+            return "Error al ejecutar el procedimiento almacenado: " . $e->getMessage();
+        }
+    }
+
+    public function set_anular($parameter){
+        $id_users = !empty($parameter['id_users']) ? $parameter['id_users'] : 0;
+        $id_recharge = !empty($parameter['id_recharge_anul']) ? $parameter['id_recharge_anul'] : 0;
+
+        try {
+            $stmt = $this->conec->prepare("CALL sp_set_anular_recharge_v1(:id_recharge, :id_users)");
+            $stmt->bindParam(':id_recharge', $id_recharge, PDO::PARAM_INT);
+            $stmt->bindParam(':id_users', $id_users, PDO::PARAM_INT);
+            $stmt->execute();
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $stmt->closeCursor();
+            return $result;
+        } catch (PDOException $e) {
+            return "Error al ejecutar el procedimiento almacenado: " . $e->getMessage();
+        }
+    }
+
+    public function set_editar($parameter){
+        $id_users = !empty($parameter['id_users']) ? $parameter['id_users'] : 0;
+        $id_recharge = !empty($parameter['id_recharge_edit']) ? $parameter['id_recharge_edit'] : 0;
+        $id_bank = !empty($parameter['id_bank_edit']) ? $parameter['id_bank_edit'] : 0;
+        $id_channel = !empty($parameter['id_channel_edit']) ? $parameter['id_channel_edit'] : 0;
+        $amount = !empty($parameter['amount_edit']) ? $parameter['amount_edit'] : 0;
+
+        try {
+            $stmt = $this->conec->prepare("CALL sp_set_editar_recharge_v1(:id_recharge, :id_users, :id_bank, :id_channel, :amount)");
+            $stmt->bindParam(':id_recharge', $id_recharge, PDO::PARAM_INT);
+            $stmt->bindParam(':id_users', $id_users, PDO::PARAM_INT);
+            $stmt->bindParam(':id_bank', $id_bank, PDO::PARAM_INT);
+            $stmt->bindParam(':id_channel', $id_channel, PDO::PARAM_INT);
+            $stmt->bindParam(':amount', $amount, PDO::PARAM_STR);
+            $stmt->execute();
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $stmt->closeCursor();
+            return $result;
+        } catch (PDOException $e) {
+            return "Error al ejecutar el procedimiento almacenado: " . $e->getMessage();
+        }
+    }
+
 }
