@@ -1,3 +1,8 @@
+Desarrollado en PHP 7.3
+-------------------------
+-------------------------
+
+
 Para el acceso a la aplicacion  usar los siguientes usuarios:
 
 USUARIO 01
