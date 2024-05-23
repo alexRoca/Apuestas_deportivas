@@ -36,6 +36,7 @@ class Monedero {
             $resultado_walet = $this->consulta->get_customer_wallets($parameter);
             $recharges = $this->consulta->get_recharge($parameter);
             $customer_wallets_movements = $this->consulta->get_customer_wallets_movements($parameter);
+            $recharge_cancel = $this->consulta->get_recharge_cancel($parameter);
             $bank = $this->consulta->get_bank();
             $channel = $this->consulta->get_channel();
             require '././vistas/mov_monedero.php';
@@ -48,7 +49,7 @@ class Monedero {
     public function recargar($parameter){
         $parameter['id_users']=$_SESSION['id_users'];
         $this->consulta->post_recharge($parameter);
-
+        
         header('Location: Monedero?PlayerID='.$parameter['id_customer']);
         exit;
     }
@@ -65,7 +66,7 @@ class Monedero {
         $parameter['id_users']=$_SESSION['id_users'];
         $this->consulta->set_anular($parameter);
 
-        header('Location: Monedero?PlayerID='.$parameter['PlayerID']);
+        header('Location: Monedero?PlayerID='.$parameter['id_customer']);
         exit;
     }
 

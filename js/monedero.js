@@ -17,9 +17,9 @@ document.querySelectorAll(".recharge_edit").forEach(function (component) {
 
 document.querySelectorAll(".recharge_anular").forEach(function (component) {
     component.addEventListener("click", function (e) {
-        var idrecarga = this.getAttribute("data-idrecarga");
-        document.getElementById("id_label_recarga_anular").innerHTML = idrecarga;
-        document.getElementById("id_recharge_anular").value = idrecarga;
+        var idrecargaAnul = this.getAttribute("data-idrecarga");
+        document.getElementById("id_label_recarga_anular").innerHTML = 'ID ' +idrecargaAnul;
+        document.getElementById("id_recharge_anular").value = idrecargaAnul;
 
         var modal = new bootstrap.Modal(document.getElementById("modalanular"));
         modal.show();

@@ -34,7 +34,17 @@
                 </div>
             </div>
         </nav>
+        
         <div class="container">
+            <?php if(!empty($_SESSION['type_alert'])){?>
+                <div class="alert alert-<?=$_SESSION['type_alert']?>" role="alert">
+                <?=$_SESSION['msg']?>
+                </div>
+            <?php 
+                unset($_SESSION['success']);
+                unset($_SESSION['msg']);
+                unset($_SESSION['type_alert']);
+            }?>
             <div class="row justify-content-center mt-5">
                 <div class="col-12 ">
                     <h1 class="text-center">Monedero</h1>
@@ -119,12 +129,7 @@
                                                 </td>
                                                 <td>
                                                     <?php if($row_recharges['id_status'] <> -1){?>
-                                                        <form method="POST">
-                                                            <input type="hidden" name="PlayerID" value="<?=$parameter['PlayerID']?>">
-                                                            <input type="hidden" name="id_recharge" value="<?=$row_recharges['id_recharge']?>">
-                                                            <input type="hidden" name="origen" value="anular">
-                                                            <button type="submit" class="btn btn-danger">Anular</button>
-                                                        </form>
+                                                        <button type="button" data-idrecarga=<?=$row_recharges['id_recharge']?> class="btn btn-danger recharge_anular">Anular</button>
                                                     <?php }else{ ?>
                                                         <button type="button" class="btn btn-danger" disabled>Anular</button>
                                                     <?php } ?>
@@ -170,6 +175,40 @@
                                                 <td><?php echo $row_customer_wallets_movements['amount']; ?></td>
                                                 <td><?php echo $row_customer_wallets_movements['name_user']; ?></td>
                                                 <td><?php echo $row_customer_wallets_movements['timestamp_created']; ?></td>
+                                            </tr>
+                                        <?php }?>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 mt-5 mb-3">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            Lista de Recargas Anuladas
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="table-responsive rounded-top">
+                                <table class="table table-striped mb-0">
+                                    <thead>
+                                    <tr>
+                                        <th>ID recarga</th>
+                                        <th>Monto</th>
+                                        <th>Motivo de Anulación</th>
+                                        <th>Usuario modificador</th>
+                                        <th>Fecha Creación</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody class="text-nowrap">
+                                        <?php foreach($recharge_cancel as $row_recharge_cancel){?>
+                                            <tr>
+                                                <td><?php echo $row_recharge_cancel['id_recharge']; ?></td>
+                                                <td><?php echo $row_recharge_cancel['amount']; ?></td>
+                                                <td><?php echo $row_recharge_cancel['motive']; ?></td>
+                                                <td><?php echo $row_recharge_cancel['name_user']; ?></td>
+                                                <td><?php echo $row_recharge_cancel['timestamp_created']; ?></td>
                                             </tr>
                                         <?php }?>
                                     </tbody>
@@ -262,6 +301,33 @@
                     </div>
                     <input type="hidden" name="origen" value="editar">
                     <input type="hidden" name="id_recharge_edit" id="id_recharge_edit">
+                    <input type="hidden" name="id_customer" value="<?=$parameter['PlayerID']?>">
+                </form>
+            </div>
+        </div>
+
+        <!-- Modal -->
+        <div class="modal fade" id="modalanular" tabindex="-1" aria-labelledby="modalanularLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <form action="Monedero" method="POST">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="modalanularLabel">Anular recarga <div id="id_label_recarga_anular"></div></h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-floating mb-3">
+                                <input placeholder=" " type="text" name="motivo_anular" id="motivo_anular" class="form-control">
+                                <label for="motivo_anular">Motivo de anulación</label>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                            <button type="submit" class="btn btn-primary">Anular</button>
+                        </div>
+                    </div>
+                    <input type="hidden" name="origen" value="anular">
+                    <input type="hidden" name="id_recharge_anular" id="id_recharge_anular">
                     <input type="hidden" name="id_customer" value="<?=$parameter['PlayerID']?>">
                 </form>
             </div>

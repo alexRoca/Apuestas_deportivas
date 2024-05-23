@@ -130,11 +130,14 @@ class consultasYregistros extends conexion{
             $stmt->bindParam(':amount', $amount, PDO::PARAM_STR);
             $stmt->bindParam(':id_users', $id_users, PDO::PARAM_INT);
             $stmt->execute();
-            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
             $stmt->closeCursor();
-            return $result;
+            $_SESSION['success'] = 'true';
+            $_SESSION['type_alert'] = 'success';
+            $_SESSION['msg'] = 'Recarga Realizada con exito.';
         } catch (PDOException $e) {
-            return "Error al ejecutar el procedimiento almacenado: " . $e->getMessage();
+            $_SESSION['success'] = 'false';
+            $_SESSION['type_alert'] = 'danger';
+            $_SESSION['msg'] = $e->getMessage();
         }
     }
 
@@ -147,28 +150,36 @@ class consultasYregistros extends conexion{
             $stmt->bindParam(':id_recharge', $id_recharge, PDO::PARAM_INT);
             $stmt->bindParam(':id_users', $id_users, PDO::PARAM_INT);
             $stmt->execute();
-            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
             $stmt->closeCursor();
-            return $result;
+            $_SESSION['success'] = 'true';
+            $_SESSION['type_alert'] = 'success';
+            $_SESSION['msg'] = 'Se asigno el saldo con exito.';
         } catch (PDOException $e) {
-            return "Error al ejecutar el procedimiento almacenado: " . $e->getMessage();
+            $_SESSION['success'] = 'false';
+            $_SESSION['type_alert'] = 'danger';
+            $_SESSION['msg'] = $e->getMessage();
         }
     }
 
     public function set_anular($parameter){
         $id_users = !empty($parameter['id_users']) ? $parameter['id_users'] : 0;
-        $id_recharge = !empty($parameter['id_recharge_anul']) ? $parameter['id_recharge_anul'] : 0;
+        $id_recharge = !empty($parameter['id_recharge_anular']) ? $parameter['id_recharge_anular'] : 0;
+        $motive = !empty($parameter['motivo_anular']) ? $parameter['motivo_anular'] : 0;
 
         try {
-            $stmt = $this->conec->prepare("CALL sp_set_anular_recharge_v1(:id_recharge, :id_users)");
+            $stmt = $this->conec->prepare("CALL sp_set_anular_recharge_v1(:id_recharge, :id_users, :motive)");
             $stmt->bindParam(':id_recharge', $id_recharge, PDO::PARAM_INT);
             $stmt->bindParam(':id_users', $id_users, PDO::PARAM_INT);
+            $stmt->bindParam(':motive', $motive, PDO::PARAM_STR);
             $stmt->execute();
-            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
             $stmt->closeCursor();
-            return $result;
+            $_SESSION['success'] = 'true';
+            $_SESSION['type_alert'] = 'success';
+            $_SESSION['msg'] = 'Se anulo la recarga con exito.';
         } catch (PDOException $e) {
-            return "Error al ejecutar el procedimiento almacenado: " . $e->getMessage();
+            $_SESSION['success'] = 'false';
+            $_SESSION['type_alert'] = 'danger';
+            $_SESSION['msg'] = $e->getMessage();
         }
     }
 
@@ -186,6 +197,24 @@ class consultasYregistros extends conexion{
             $stmt->bindParam(':id_bank', $id_bank, PDO::PARAM_INT);
             $stmt->bindParam(':id_channel', $id_channel, PDO::PARAM_INT);
             $stmt->bindParam(':amount', $amount, PDO::PARAM_STR);
+            $stmt->execute();
+            $stmt->closeCursor();
+            $_SESSION['success'] = 'true';
+            $_SESSION['type_alert'] = 'success';
+            $_SESSION['msg'] = 'Se edito la recarga con exito.';
+        } catch (PDOException $e) {
+            $_SESSION['success'] = 'false';
+            $_SESSION['type_alert'] = 'danger';
+            $_SESSION['msg'] = $e->getMessage();
+        }
+    }
+
+    public function get_recharge_cancel($parameter){
+        $PlayerID = !empty($parameter['PlayerID']) ? $parameter['PlayerID'] : 0;
+
+        try {
+            $stmt = $this->conec->prepare("CALL sp_get_recharge_cancel_v1(:PlayerID)");
+            $stmt->bindParam(':PlayerID', $PlayerID, PDO::PARAM_INT);
             $stmt->execute();
             $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
             $stmt->closeCursor();
